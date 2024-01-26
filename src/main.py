@@ -21,50 +21,55 @@ def fill_the_missing_data_with_nan(data: list[list]) -> list[list]:
             row.append(np.nan)
     return data
 
+def main():
+    load_dotenv()
 
-load_dotenv()
+    # To access an environment variable
+    URL = str(os.getenv("URL"))
 
-# To access an environment variable
-URL = str(os.getenv("URL"))
+    # If modifying these scopes, delete the file token.json.
+    SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
-# If modifying these scopes, delete the file token.json.
-SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+    # The ID and range of a sample spreadsheet.
+    SAMPLE_SPREADSHEET_ID = extract_id(URL)
+    SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES = "engenharia_de_software!A2:H"
+    SAMPLE_RANGE_NAME_WITHOUT_TOTAL_OF_CLASSES = "engenharia_de_software!A3:H"
 
-# The ID and range of a sample spreadsheet.
-SAMPLE_SPREADSHEET_ID = extract_id(URL)
-SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES = "engenharia_de_software!A2:H27"
-SAMPLE_RANGE_NAME_WITHOUT_TOTAL_OF_CLASSES = "engenharia_de_software!A3:H27"
-
-creds = None
-# The file token.json stores the user's access and refresh tokens, and is
-# created automatically when the authorization flow completes for the first
-# time.
-if os.path.exists("token.json"):
-    creds = Credentials.from_authorized_user_file("token.json", SCOPES)
-# If there are no (valid) credentials available, let the user log in.
-if not creds or not creds.valid:
-    if creds and creds.expired and creds.refresh_token:
-        creds.refresh(Request())
-    else:
-        flow = InstalledAppFlow.from_client_secrets_file(
-            "credentials.json", SCOPES
-        )
-        creds = flow.run_local_server(port=0)
-    # Save the credentials for the next run
-    with open("token.json", "w") as token:
-        token.write(creds.to_json())
+    creds = None
+    # The file token.json stores the user's access and refresh tokens, and is
+    # created automatically when the authorization flow completes for the first
+    # time.
+    if os.path.exists("token.json"):
+        creds = Credentials.from_authorized_user_file("token.json", SCOPES)
+    # If there are no (valid) credentials available, let the user log in.
+    if not creds or not creds.valid:
+        if creds and creds.expired and creds.refresh_token:
+            creds.refresh(Request())
+        else:
+            flow = InstalledAppFlow.from_client_secrets_file(
+                "credentials.json", SCOPES
+            )
+            creds = flow.run_local_server(port=0)
+        # Save the credentials for the next run
+        with open("token.json", "w") as token:
+            token.write(creds.to_json())
 
 
-service = build("sheets", "v4", credentials=creds)
-# Call the Sheets API
-sheet = service.spreadsheets()
-data = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                          range=SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES).execute()["values"]
-numberOfClasses = int(data[0][0][28:])
-data.pop(0)
-
-df = pd.DataFrame(data[1:], columns=data[0])
-df = calculateStatusAndFinalGrade(df, 60)
-newData = [df.columns.tolist()]+df.values.tolist()
-sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME_WITHOUT_TOTAL_OF_CLASSES,
-                      valueInputOption="USER_ENTERED", body={'values': newData}).execute()
+    service = build("sheets", "v4", credentials=creds)
+    # Call the Sheets API
+    sheet = service.spreadsheets()
+    data = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
+                            range=SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES).execute()["values"]
+    numberOfClasses = int(data[0][0][28:])
+    data.pop(0)
+    df = pd.DataFrame(data[1:], columns=data[0])
+    print("Starter sheet:")
+    print(df)
+    df = calculateStatusAndFinalGrade(df, 60)
+    print("Result:")
+    print(df)
+    newData = [df.columns.tolist()]+df.values.tolist()
+    sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME_WITHOUT_TOTAL_OF_CLASSES,
+                        valueInputOption="USER_ENTERED", body={'values': newData}).execute()
+if __name__ == "__main__":
+    main()

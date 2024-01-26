@@ -15,7 +15,9 @@ def main():
     numberOfClasses = find_numberOfClasses(URL)
     df = pd.read_csv(
         f"{URL.replace('/edit?usp=sharing', '/export?format=csv')}", skiprows=2)
+    print("Starter sheet:")
     print(df)
+    print("Result:")
     print(calculateStatusAndFinalGrade(df, numberOfClasses))
 
 
