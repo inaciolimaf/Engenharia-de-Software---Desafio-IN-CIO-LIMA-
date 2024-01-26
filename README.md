@@ -1,6 +1,6 @@
 # Engenharia de Software - Desafio [INÁCIO LIMA]
 ## Desafio Tunts.Rocks 2024
-This code aims to automatically fill in a Google spreadsheet about the student's situation based on grades and absences. The spreadsheet used to execute the code was [this]("https://docs.google.com/spreadsheets/d/1AOB0NWOnEr8DdKwWC0oxVl_AfsFl6-SbVXRthu6HxZI/edit?usp=sharing").
+This code aims to automatically fill in a Google spreadsheet about the student's situation based on grades and absences. The spreadsheet used to execute the code was [this](https://docs.google.com/spreadsheets/d/1AOB0NWOnEr8DdKwWC0oxVl_AfsFl6-SbVXRthu6HxZI/edit?usp=sharing).
 ## How to run
 - To run the code, the first step is creating a virtual environment
 
