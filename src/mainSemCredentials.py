@@ -1,15 +1,23 @@
 import os
 from dotenv import load_dotenv
 import pandas as pd
-from calculoDataFrame import calculoSituacaoENotaFinal
+from calculateDF import calculateStatusAndFinalGrade
 
-load_dotenv()
 
-# Acessar uma variável de ambiente
-URL = str(os.getenv("URL"))
+def find_numberOfClasses(URL: str) -> int:
+    return int(pd.read_csv(
+        f"{URL.replace('/edit?usp=sharing', '/export?format=csv')}").iloc[0].iloc[0][28:])
 
-total_de_aulas = int(pd.read_csv(f"{URL.replace('/edit?usp=sharing', '/export?format=csv')}").iloc[0].iloc[0][28:])
-# TODO: Passar para outra função
-df = pd.read_csv(f"{URL.replace('/edit?usp=sharing', '/export?format=csv')}", skiprows=2)
-print(df)
-print(calculoSituacaoENotaFinal(df, total_de_aulas))
+
+def main():
+    load_dotenv()
+    URL = str(os.getenv("URL"))
+    numberOfClasses = find_numberOfClasses(URL)
+    df = pd.read_csv(
+        f"{URL.replace('/edit?usp=sharing', '/export?format=csv')}", skiprows=2)
+    print(df)
+    print(calculateStatusAndFinalGrade(df, numberOfClasses))
+
+
+if __name__ == "__main__":
+    main()

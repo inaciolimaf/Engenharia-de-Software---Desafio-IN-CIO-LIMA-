@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import pandas as pd
 import re
 import numpy as np
-from calculoDataFrame import calculoSituacaoENotaFinal
+from calculateDF import calculateStatusAndFinalGrade
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -12,6 +12,14 @@ from googleapiclient.discovery import build
 
 def extract_id(url: str) -> str:
     return str(re.search(r"/d/([^/]+)/", url).group(1))
+
+
+def fill_the_missing_data_with_nan(data: list[list]) -> list[list]:
+    max_cols = max(len(row) for row in data)
+    for row in data:
+        while len(row) < max_cols:
+            row.append(np.nan)
+    return data
 
 
 load_dotenv()
@@ -52,15 +60,11 @@ service = build("sheets", "v4", credentials=creds)
 sheet = service.spreadsheets()
 data = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                           range=SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES).execute()["values"]
-totalDeAulas = int(data[0][0][28:])
+numberOfClasses = int(data[0][0][28:])
 data.pop(0)
-max_cols = max(len(row) for row in data)
-# Preencher as linhas com menos colunas com NaN
-for row in data:
-    while len(row) < max_cols:
-        row.append(np.nan)
+
 df = pd.DataFrame(data[1:], columns=data[0])
-df = calculoSituacaoENotaFinal(df, 60)
+df = calculateStatusAndFinalGrade(df, 60)
 newData = [df.columns.tolist()]+df.values.tolist()
 sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME_WITHOUT_TOTAL_OF_CLASSES,
                       valueInputOption="USER_ENTERED", body={'values': newData}).execute()
