@@ -21,6 +21,7 @@ def fill_the_missing_data_with_nan(data: list[list]) -> list[list]:
             row.append(np.nan)
     return data
 
+
 def main():
     load_dotenv()
 
@@ -54,12 +55,11 @@ def main():
         with open("token.json", "w") as token:
             token.write(creds.to_json())
 
-
     service = build("sheets", "v4", credentials=creds)
     # Call the Sheets API
     sheet = service.spreadsheets()
     data = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
-                            range=SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES).execute()["values"]
+                              range=SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES).execute()["values"]
     data = fill_the_missing_data_with_nan(data)
     numberOfClasses = int(data[0][0][28:])
     data.pop(0)
@@ -71,6 +71,8 @@ def main():
     print(df)
     newData = [df.columns.tolist()]+df.values.tolist()
     sheet.values().update(spreadsheetId=SAMPLE_SPREADSHEET_ID, range=SAMPLE_RANGE_NAME_WITHOUT_TOTAL_OF_CLASSES,
-                        valueInputOption="USER_ENTERED", body={'values': newData}).execute()
+                          valueInputOption="USER_ENTERED", body={'values': newData}).execute()
+
+
 if __name__ == "__main__":
     main()
