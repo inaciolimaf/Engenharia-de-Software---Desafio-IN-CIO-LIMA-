@@ -9,6 +9,6 @@ def calculateStatusAndFinalGrade(df: pd.DataFrame, numberOfClasses) -> pd.DataFr
                           row["P2"], row["P3"], numberOfClasses)
         situation = student.situation()
         df.at[i, "Situação"] = situation
-        df.at[i, "Nota para Aprovação Final"] = Student.final_grade(
+        df.at[i, "Nota para Aprovação Final"] = student.final_grade(
         ) if situation == "Exame Final" else 0
     return df
