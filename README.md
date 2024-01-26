@@ -1,6 +1,6 @@
 # Engenharia de Software - Desafio [INÁCIO LIMA]
 Desafio Tunts.Rocks 2024
-## Como rodar o código
+## Como rodar o código (Windows)
 Com o python intalado o primeiro passo é criar um ambiente virtual
 
 ```python -m venv venv```
