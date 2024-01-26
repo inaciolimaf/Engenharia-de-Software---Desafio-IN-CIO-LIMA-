@@ -60,12 +60,13 @@ def main():
     sheet = service.spreadsheets()
     data = sheet.values().get(spreadsheetId=SAMPLE_SPREADSHEET_ID,
                             range=SAMPLE_RANGE_NAME_WITH_TOTAL_OF_CLASSES).execute()["values"]
+    data = fill_the_missing_data_with_nan(data)
     numberOfClasses = int(data[0][0][28:])
     data.pop(0)
     df = pd.DataFrame(data[1:], columns=data[0])
     print("Starter sheet:")
     print(df)
-    df = calculateStatusAndFinalGrade(df, 60)
+    df = calculateStatusAndFinalGrade(df, numberOfClasses)
     print("Result:")
     print(df)
     newData = [df.columns.tolist()]+df.values.tolist()
