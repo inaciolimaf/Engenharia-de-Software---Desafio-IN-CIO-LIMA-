@@ -15,9 +15,11 @@ class Student:
         if self.absences > self.numberOfClasses*(self.MAX_ALLOWED_ABSENCES_AS_A_PERCENTAGE/100):
             return "Reprovado por Falta"
         mean = (self.p1+self.p2+self.p3)/3
-        if mean < 50:
+        GRADE_FAILURE = 50
+        FINAL_ASSESSMENT_GRADE = 70
+        if mean < GRADE_FAILURE:
             return "Reprovado por Nota"
-        if mean < 70:
+        if mean < FINAL_ASSESSMENT_GRADE:
             return "Exame Final"
         return "Aprovado"
 
